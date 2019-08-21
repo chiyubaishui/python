@@ -64,14 +64,11 @@ html结构
     
 </body>
 </html>
-复制代码
-文档声明头
-任何一个标准的HTML页面，第一行一定是一个以
 
-<!DOCTYPE html>
+文档声明头
+任何一个标准的HTML页面，第一行一定是一个以<!DOCTYPE html>
 开头的这一行，就是文档声明头，DocType Declaration，简称DTD。此标签可告知浏览器文档使用哪种 HTML 或 XHTML 规范。
 
-了解doctype声明
 
 头标签（head）
 head标签都放在头部分之间。这里面包含了：<title>、<meta>、<link>，<style>
