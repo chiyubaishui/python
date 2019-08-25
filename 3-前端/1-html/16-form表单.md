@@ -47,7 +47,9 @@ submit	提交按钮	<input type="submit" value="提交" />
 reset	重置按钮	<input type="reset" value="重置"  />
 button	普通按钮	<input type="button" value="普通按钮"  />
 hidden	隐藏输入框	<input type="hidden"  />
-file	文本选择框	<input type="file"  />
+file	文本选择框	<input type="file" method="post" enctype="multipart/form-data" />  
+	enctype 属性规定在发送到服务器之前应该如何对表单数据进行编码。multipart/form-data	不对字符编码。在使用包含文件上传控件的表单时，必须使用该值。
+
  属性说明:
 
 name：表单提交时的“键”，注意和id的区别
@@ -59,7 +61,7 @@ checked：radio和checkbox默认被选中的项
 readonly：text和password设置只读
 disabled：所有input均适用
 select标签
-复制代码
+
 <form action="" method="post">
   <select name="city" id="city">
     <option value="1">北京</option>
@@ -68,7 +70,26 @@ select标签
     <option value="4">深圳</option>
   </select>
 </form>
-复制代码
+optgroup    分组的下拉框
+    <select name="from2" id="s2">
+        <optgroup label="北京">
+            <option value="cp">昌平</option>
+            <option value="cy">朝阳</option>
+            <option value="hd">海淀</option>
+            <option value="ft">丰台</option>
+        </optgroup>
+        <optgroup label="上海">
+            <option value="pdxq">浦东新区</option>
+            <option value="mhq">闵行区</option>
+            <option value="hpq">黄浦区</option>
+        </optgroup>
+        <optgroup label="四川">
+            <option value="pzh">攀枝花</option>
+            <option value="zg">自贡</option>
+            <option value="my">绵阳</option>
+        </optgroup>
+    </select>
+	
 属性说明：
 
 multiple：布尔属性，设置后为多选，否则默认单选
