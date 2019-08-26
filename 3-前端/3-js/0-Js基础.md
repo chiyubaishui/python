@@ -90,3 +90,51 @@ silce()的特点：
 区别于Python，true和false都是小写。
 var a = true;
 var b = false;
+""(空字符串)、0、null、undefined、NaN都是false。
+null表示值是空，一般在需要指定或清空一个变量时才会使用，如 name=null;
+undefined表示当声明一个变量但未初始化时，该变量的默认值是undefined。还有就是函数无明确的返回值时，返回的也是undefined。
+
+7、数组
+
+数组对象的作用是：使用单独的变量名来存储一系列的值。类似于Python中的列表。
+var a = [123, "ABC"];
+console.log(a[1]);  // 输出"ABC"
+常用方法：
+
+方法	说明
+.length	数组的大小
+.push(ele)	尾部追加元素
+.pop()	获取尾部的元素
+.unshift(ele)	头部插入元素
+.shift()	头部移除元素
+.slice(start, end)	切片
+.reverse()	反转
+.join(seq)	将数组元素连接成字符串
+.concat(val, ...)	连接数组
+.sort()	排序
+.forEach()	将数组的每个元素传递给回调函数
+.splice()	删除元素，并向数组添加新元素。
+.map()	返回一个数组元素调用函数处理后的值的新数组
+
+关于sort()需要注意：
+
+8、typeof判断数据类型
+数组和null返回的是object
+null=undefine 布尔值
+
+9、运算符
+算数运算符
++ - * / % ++ --
+比较运算符
+> >= < <= != == === !==
+注意：
+
+1 == “1”  // true
+1 === "1"  // false
+逻辑运算符
+&& || !
+赋值运算符
+= += -= *= /=
+
+
+
