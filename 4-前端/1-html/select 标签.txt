@@ -1,0 +1,15 @@
+想在一个下拉框里面默认显示选中的值的写法：加上一个selected属性就好了
+
+<select name="carlist">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="vw">VW</option>
+  <option value="audi" selected>Audi</option>
+</select>
+
+value 属性规定在表单被提交时被发送到服务器的值。
+<option> 与 <option/> 之间的值是浏览器显示在下拉列表中的内容，而 value 属性中的值是表单被提交时被发送到服务器的值。
+注释：如果没有指定 value 属性，选项的值将设置为 <option> 标签中的内容。
+
+name 属性规定 select 元素的名称。
+name 属性用于对提交到服务器后的表单数据进行标识，或者在客户端通过 JavaScript 引用表单数据。
