@@ -1,0 +1,68 @@
+4. ORM
+
+import pymysql
+pymysql.connect(
+ ...
+ ...
+)
+
+1. 不同的程序员写的SQL水平参差不齐
+2. 执行效率也参差不齐
+
+python语法   --自动翻译-->  SQL语句
+ORM: 
+	优点:
+		1. 简单,不用自己写SQL语句
+		2. 开发效率高
+	缺点:
+		1. 记忆你这个特殊的语法
+		2. 相对于大神些的SQL语句,肯定执行效率有差距
+	
+ORM的对应关系:
+	类          --->      数据表
+	对象        --->      数据行
+	属性        --->      字段
+
+ORM能做的事儿:
+	1. 操作数据表    --> 创建表/删除表/修改表
+		操作models.py里面的类
+	
+	2. 操作数据行    --> 数据的增删改查
+		
+	
+	不能创建数据库,自己动手创建数据库
+	
+使用Django的ORM详细步骤:
+	1. 自己动手创建数据库
+		create database 数据库名;
+	2. 在Django项目中设置连接数据库的相关配置(告诉Django连接哪一个数据库)
+		# 数据库相关的配置
+		DATABASES = {
+			'default': {
+				'ENGINE': 'django.db.backends.mysql',  # 连接的数据库类型
+				'HOST': '127.0.0.1',  # 连接数据库的地址
+				'PORT': 3306,  # 端口
+				'NAME': "day61",  # 数据库名称
+				'USER': 'root',  # 用户
+				'PASSWORD': '123456'  # 密码
+			}
+		}
+	3. 告诉Django用pymysql代替默认的MySQLDB 连接MySQL数据库
+		在项目/__init__.py文件中,写下面两句:
+			import pymysql
+			# 告诉Django用pymysql来代替默认的MySQLdb
+			pymysql.install_as_MySQLdb()
+	4. 在app下面的models.py文件中定义一个类,这个类必须继承models.Model
+		class 类名(models.Model):
+			...
+	5. 执行两个命令
+		1. python3 manage.py makemigrations
+		2. python3 manage.py migrate
+
+
+ORM单表的增加和查询:
+	1. 查询（from app01 import models）
+		models.UserInfo.objects.all()
+		
+	2. 增加
+		models.UserInfo.objects.create(name="张三")

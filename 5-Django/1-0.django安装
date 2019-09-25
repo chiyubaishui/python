@@ -1,0 +1,51 @@
+0. Django安装
+	pip3 install django==1.11.11
+	
+	pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple/ django==1.11.11
+
+	PyCharm安装的时候:
+		注意不要勾选那个选项 (你们懂得)
+		
+1、新建Django项目
+	命令行创建:
+		django-admin startproject mysite
+	pycharm创建:
+		1. File --> New project --> 左侧选Django --> 右侧填项目路径,并且勾选python.exe
+	
+2、设置Django项目:
+	1. settings.py
+		1. 配置HTML文件存放的位置
+		2. 配置静态文件存放的位置	
+		
+3、启动项目：
+
+	1. 命令行启动
+		在项目的根目录下(也就是有manage.py的那个目录),运行:
+		python3 manage.py runserver IP:端口--> 在指定的IP和端口启动
+		python3 manage.py runserver 端口   --> 在指定的端口启动
+		python3 manage.py runserver        --> 默认在本机的8000端口启动
+	
+	2. PyCharm启动
+		点绿色的小三角,直接可以启动Django项目(前提是小三角左边是你的Django项目名)
+	
+	一个完整得请求流程:
+		0. 启动服务端,等待客户端(用户的浏览器)来连接
+		1. 在浏览器地址栏输入URL,与服务端建立连接,浏览器发送请求
+		2. 服务端收到请求消息,解析请求消息,根据路径和函数的对应关系,找到将要执行的函数
+		3. 执行函数,打开HTML文件,进行字符串替换,得到一个最终要返回的HTML内容
+		4. 按照HTTP协议的消息格式要求,把HTML内容回复给用户浏览器(发送响应)
+		5. 浏览器收到响应的消息之后,按照HTML的规则渲染页面.
+		6. 关闭连接
+		
+4、配置相关   项目名/settings.py文件
+1. Templates(存放HTML文件的配置)       <-- 告诉Django去哪儿找我的HTML文件
+
+2. 静态文件(css/js/图片)
+	# 静态文件保存目录的别名
+	STATIC_URL = '/static/'
+
+	# 所有静态文件(css/js/图片)都放在我下面你配置的文件夹中
+	STATICFILES_DIRS = [
+		os.path.join(BASE_DIR, "static"),
+	]
+3. 注释掉setting.py中 带有 csrf 的那一行(大概45~47行)

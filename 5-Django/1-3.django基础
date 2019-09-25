@@ -1,0 +1,49 @@
+复习:
+	form表单往后端提交数据需要注意哪三点:
+		1. form不是from,所有获取用户输入的标签都应该放在form里面, 并且必须要有name属性
+		2. action属性控制往哪儿提交,method一般都设置成post
+		3. 提交按钮必须是type=submit,不能是别的类型
+
+
+1. GET请求和POST请求
+	GET请求:
+		1. 浏览器请求一个页面
+		2. 搜索引擎检索关键字的时候
+		
+	POST请求:
+		1. 浏览器向服务端提交数据,比如登录/注册等
+		
+2. Django基础必备三件套：
+
+from django.shortcuts import HttpResponse, render, redirect
+
+1)HttpResponse
+内部传入一个字符串参数，返回给浏览器。
+
+例如：
+def index(request):
+    # 业务逻辑代码
+    return HttpResponse("OK")
+
+2)render
+除request参数外还接受一个待渲染的模板文件和一个保存具体数据的字典参数。
+
+将数据填充进模板文件，最后把结果返回给浏览器。
+
+例如：
+
+def index(request):
+    # 业务逻辑代码
+    return render(request, "index.html", {"name": "alex", "hobby": ["烫头", "泡吧"]})
+
+3)redirect
+接受一个URL参数，表示跳转到指定的URL。
+
+例如：
+
+def index(request):
+    # 业务逻辑代码
+    return redirect("/home/")
+
+
+		

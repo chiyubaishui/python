@@ -1,0 +1,23 @@
+Django中的APP:
+什么是APP?以及为什么要用APP?
+
+project  --> 项目  (老男孩教育大学校)
+
+APP      --> 应用  (Linux学院/Python学院/大数据学院/Java学院)
+
+方便我们在一个大的Django项目中,管理实现不同的业务功能.
+
+1. 创建APP的命令
+	1. 命令行,在Django项目的根目录输入:
+		python3 manage.py startapp app名字
+
+# 告诉Django有哪些APP		
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'app01.apps.App01Config',
+]
