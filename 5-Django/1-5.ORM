@@ -66,3 +66,18 @@ ORM单表的增加和查询:
 		
 	2. 增加
 		models.UserInfo.objects.create(name="张三")
+		
+publisher = models.ForeignKey(to="Publisher")
+
+ {% for i in all_book %}
+        <tr>
+        <td>{{ i.id }}</td>
+        <td>{{ i.title }}</td>
+        <td>{{ i.publisher.name }}</td>  #其中i.publisher是一个对象
+        #<td>{{ i.publisher_id }}</td>  #其中i.publisher_id是一个数字，对应的是数据库中表的字段中保存的外键值
+        <td>
+            <a href="/delete_book/?id={{ i.id }}">删除</a>
+            <a href="/edit_book/?id={{ i.id }}">编辑</a>
+        </td>
+        </tr>
+    {% endfor %}
