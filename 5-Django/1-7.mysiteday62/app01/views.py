@@ -56,8 +56,8 @@ def edit_publisher(request):
         edit_id = request.POST.get("id")
         new_name = request.POST.get("publisher_name")
         # 更新出版社
-        # 根据id取到编辑的是哪个出版社
-        edit_publisher = models.Publisher.objects.get(id=edit_id)
+        # 根据id取到编辑的是哪个出版社，不能直接通过id=id来查找的
+        edit_publisher = models.Publisher.objects.get(id=edit_id)   
         edit_publisher.name = new_name
         edit_publisher.save()  # 把修改提交到数据库
         # 跳转出版社列表页,查看是否修改成功
