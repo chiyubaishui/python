@@ -1,80 +1,15 @@
-4. ORM
-
-import pymysql
-pymysql.connect(
- ...
- ...
-)
-
-1. 不同的程序员写的SQL水平参差不齐
-2. 执行效率也参差不齐
-
-python语法   --自动翻译-->  SQL语句
-ORM: 
-	优点:
-		1. 简单,不用自己写SQL语句
-		2. 开发效率高
-	缺点:
-		1. 记忆你这个特殊的语法
-		2. 相对于大神些的SQL语句,肯定执行效率有差距
-	
-ORM的对应关系:
-	类          --->      数据表
-	对象        --->      数据行
-	属性        --->      字段
-
-ORM能做的事儿:
-	1. 操作数据表    --> 创建表/删除表/修改表
-		操作models.py里面的类
-	
-	2. 操作数据行    --> 数据的增删改查
-		
-	
-	不能创建数据库,自己动手创建数据库
-	
-使用Django的ORM详细步骤:
-	1. 自己动手创建数据库
-		create database 数据库名;
-	2. 在Django项目中设置连接数据库的相关配置(告诉Django连接哪一个数据库)
-		# 数据库相关的配置
-		DATABASES = {
-			'default': {
-				'ENGINE': 'django.db.backends.mysql',  # 连接的数据库类型
-				'HOST': '127.0.0.1',  # 连接数据库的地址
-				'PORT': 3306,  # 端口
-				'NAME': "day61",  # 数据库名称
-				'USER': 'root',  # 用户
-				'PASSWORD': '123456'  # 密码
-			}
-		}
-	3. 告诉Django用pymysql代替默认的MySQLDB 连接MySQL数据库
-		在项目/__init__.py文件中,写下面两句:
-			import pymysql
-			# 告诉Django用pymysql来代替默认的MySQLdb
-			pymysql.install_as_MySQLdb()
-	4. 在app下面的models.py文件中定义一个类,这个类必须继承models.Model
-		class 类名(models.Model):
-			...
-	5. 执行两个命令
-		1. python3 manage.py makemigrations
-		2. python3 manage.py migrate
-
 常用字段
 AutoField
 int自增列，必须填入参数 primary_key=True。当model中如果没有自增列，则自动会创建一个列名为id的列。
-
 IntegerField
 一个整数类型,范围在 -2147483648 to 2147483647。
-
 CharField
 字符类型，必须提供max_length参数， max_length表示字符长度。
-
 DateField
 日期字段，日期格式  YYYY-MM-DD，相当于Python中的datetime.date()实例。
-
 DateTimeField
 日期时间字段，格式 YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]，相当于Python中的datetime.datetime()实例。
-		
+字段合集（争取记忆）
 AutoField(Field)
         - int自增列，必须填入参数 primary_key=True
 
@@ -191,73 +126,32 @@ AutoField(Field)
     BinaryField(Field)
         - 二进制类型
 
-自定义字段
-	class FixedCharField(models.Field):
-    """
-    自定义的char类型的字段类
-    """
-    def __init__(self, max_length, *args, **kwargs):
-        super().__init__(max_length=max_length, *args, **kwargs)
-        self.length = max_length
 
-    def db_type(self, connection):
-        """
-        限定生成数据库表的字段类型为char，长度为length指定的值
-        """
-        return 'char(%s)' % self.length
-
-
-class Class(models.Model):
-    id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=25)
-    # 使用上面自定义的char类型的字段
-    cname = FixedCharField(max_length=25)	
-		
 字段参数
 null
 用于表示某个字段可以为空。
-
 unique
 如果设置为unique=True 则该字段在此表中必须是唯一的 。
-
 db_index
 如果db_index=True 则代表着为此字段设置数据库索引。
-
 default
-为该字段设置默认值。		
-
+为该字段设置默认值。
 时间字段独有
 DatetimeField、DateField、TimeField这个三个时间字段，都可以设置如下属性。
-
 auto_now_add
 配置auto_now_add=True，创建数据记录的时候会把当前时间添加到数据库。
-
 auto_now
-配置上auto_now=True，每次更新数据记录的时候会更新该字段。		
+配置上auto_now=True，每次更新数据记录的时候会更新该字段。
+ 
 
-一般操作		
-<1> all():                 查询所有结果
- 
-<2> filter(**kwargs):      它包含了与所给筛选条件相匹配的对象
- 
-<3> get(**kwargs):         返回与所给筛选条件相匹配的对象，返回结果有且只有一个，如果符合筛选条件的对象超过一个或者没有都会抛出错误。
- 
-<4> exclude(**kwargs):     它包含了与所给筛选条件不匹配的对象
- 
-<5> values(*field):        返回一个ValueQuerySet——一个特殊的QuerySet，运行后得到的并不是一系列model的实例化对象，而是一个可迭代的字典序列
- 
-<6> values_list(*field):   它与values()非常相似，它返回的是一个元组序列，values返回的是一个字典序列
- 
-<7> order_by(*field):      对查询结果排序
- 
-<8> reverse():             对查询结果反向排序，请注意reverse()通常只能在具有已定义顺序的QuerySet上调用(在model类的Meta中指定ordering或调用order_by()方法)。
- 
-<9> distinct():            从返回结果中剔除重复纪录(如果你查询跨越多个表，可能在计算QuerySet时得到重复的结果。此时可以使用distinct()，注意只有在PostgreSQL中支持按字段去重。)
- 
-<10> count():              返回数据库中匹配查询(QuerySet)的对象数量。
- 
-<11> first():              返回第一条记录
- 
-<12> last():               返回最后一条记录
- 
-<13> exists():             如果QuerySet包含数据，就返回True，否则返回False
+元信息
+ORM对应的类里面包含另一个Meta类，而Meta类封装了一些数据库的信息。主要字段如下:
+db_table
+ORM在数据库中的表名默认是 app_类名，可以通过db_table可以重写表名。
+index_together
+联合索引。
+unique_together
+联合唯一索引。
+ordering
+指定默认按什么字段排序。
+只有设置了该属性，我们查询到的结果才可以被reverse()。

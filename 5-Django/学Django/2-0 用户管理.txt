@@ -1,0 +1,300 @@
+2.1 自定义模板和静态文件位置
+2.1.0  Django中的模板本质上也是一个独立的文本文件(其实不仅是Django，其他的 Web框架模板也是如此)，文件中包含了静态内容（比如 HTML、CSS ）和动态标记的数据。
+2.1.l 自定义模板位置：模板的前端html文件不会散落在每个项目的目录中，会放在一个统一的目录
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),], #定义了模板文件的位置
+        'APP_DIRS': False, #②将APP_DIRS设置为 False 即不再允许 Django 按照默认方式寻找模板文件
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+2.1.2 contexts
+渲染模板（将有关数据传给模板）时使用的中介物就是 contexts contexts是个包含了键值对的字典，例如前面曾经使用过的 return render(request,”blog/content.html”,{”article”:article,
+publish ”：pub ｝），这条代码通过 render（）函数声明了所使用的模板 blog/content.html ”）和 contexts
+（｛”article”： article ，”publish ”：pub ｝）。在 contexts 的键值对中，“键” 即将在模板中使用的变
+这个变量可以引用任何在视图函数中确定的对象。
+2.1.3 模板： for和if
+用通过 contexts 传入模板的数据对象。一般情况下有两类语法， 类是单独的变量， 也称为变量标签：另 一类是块命令，也称为块标签。
+变量标签使用一对双花括号"{{ blog.id }}，块标签使用一个单独的花括号。以｛%command %｝开头，，并以｛% endname % ｝结尾
+forloop的模板变量，这个变量有一些提示循环进度信息的属性。
+forloop.counter 知识for循环已经循环了多少次，从 1 开始计数
+forloop.counter0  和forloop.counter一样，只是从 0 开始计数
+forloop.revcounter  从倒数开始数，循环的次数，从 1 开始计数
+forloop.revcounter0  从倒数开始数，循环的次数，从 0 开始计数 
+forloop.first  是否是第一次循环，如果是返回 True 。否则返回 False
+forloop.last  是否是最后一次循环，如果是返回 True 。否则返回 False
+forloop.parentloop  嵌套循环时，是一个指向当前循环的上一级循环的forloop对象的引用。如 forloop.parentloop.counter 表示上一级循环循环了多少次
+2.1.2 自定义静态文件位置
+# Static files (CSS, JavaScript, Images) #django中认定的静态文件是什么
+# https://docs.djangoproject.com/en/dev/howto/static-files/
+STATIC_URL = '/static/'
+STATICFILES_DIRS = ( 
+    os.path.join(BASE_DIR, "static"), #把所有静态文件都放到指定的目录中
+)
+Django的settings配置变量中的 STATICFILES_FINDERS的默认值规定了静态文件的查找顺序和内容。
+因为Django的settings配置变量中的STATICFILES_FINDERS的默认值规定了静态文件的查找顺序和内容。
+STATICFILES_FINDERS = (
+"django.contrib.staticfiles.finders.FileSystemFinder”
+"django.contrib.staticfiles.finders.AppDirectoriesFinder"
+按照这个默认值 首先读取STATICFILES_DIRS 中规定的静态文件(django.contrib.staticfiles.finders.FileSystemFinder)，如果没有设置此值，就找不到什么，但不会对网站运行造成影响。
+然后通过django.contrib.staticfiles.finders.AppDirectoriesFinder 在每个应用中查找有没有默认的
+静态文件目录static. 如果读者在命名时将两处都做了设 ，而且静态文件的名字还都一样，那
+Django会在找到第一个后终止查询
+
+2.1.3 通用静态文件和基础模板
+一般来讲，网站的界面可以大致分为上、中、下三个部分。上部就是头部，显示网站的LOGO和导航等；中部就是要显示的具体内容； 下部就是底部，显示网站的版权信息或者诸如联系方式、购买流程等不怎么变的信息或超链接。按照上面的头部(header.html)和底部(footer.html)都可以做成基础模板。
+{% load staticfiles %}是模板中声明引入静态文件的标签，只有使用它，才能使用src="{% static '/images/logo.png' %}"，而不是用 “硬编码”的方式写图片地址。
+href="{% url 'blog:blog_title' %}"> ｝使用了在mysite/urls.py URLconf 中为应用设置的namespace 和相关应用中的name值， 拼接成该应用的入口链接 URL 。这样做同样是要避免"硬编码"
+
+
+2.2 用户登录
+2.2.1 创建应用，注册，url配置
+2.2.2 理解表单
+在./account目录中创建个文件forms.py,这个文件是专门存放各种与表单有关的类的
+from account.forms import LoginForm 引入./account/forms.py中建立的表单类 LoginForm,
+然后创建这个类的实例，只不过没有向类中传递任何参数，这个实例可以称为未绑定（数据
+实例，然后打印此未绑定实例，结果就是HTML代码。这些HTML代码构成了前端表单，其
+对话框与我们在./account/forms.py中所写的LoginForm类的属性是对应。因此，我们可以
+为不论是前端的表单，还是后端的表单类，都是对象。这个对 属性就是表单中的对话框
+(input）。
+is_bound
+is_valid
+cleaned_data
+2.2.3 登录的视图函数
+内置的用户认证和管理应用
+authenticate()
+login(request, user)
+当客户端浏览器向服务器发送GET请求后,request.GET得到一个类字典对象。比如客户端发出http://www.tdiffer.com/?name=canglaohi&course=28的GET请求，也就是在URL中访问该地址，这个请求其实携带了两个参数及其值name=canglaoshi和course=28 ，两个参数之间用＆符号连接。请求发出后，Django就通过 request.GET 得到两个参数及其值，结果是类字典对象
+所以，还可以用 request.GET get（”name”）得到参数 name的值canglaoshi。
+GET多用于数据查询，而POST多用于数据写入或者更新等（这种划分不是绝对的，根据具体业务要求确定），通过 request.POST 得到提交的表单数据，也是一个类字典对象。
+
+2.3 用内置方法实现登录和退出
+2.3.1 内重的登录方法
+from django.contrib.auth impo views as auth_views   auth_views.login(查看源代码)
+Djang内置的login()函数，在它的参数中有redirect_field_name=REDIRECT_FIELD_NAME 这就是登录后重定向的设置，上述跳转的地址，就是这个重定向设置的默认值，要想改变重定向的值，需要在./mysite settings.py 文件中设置LOGIN_REDIRECT_URL的值 在文件中添加此配置,LOGIN_REDIRECT_URL = '/blog/' 
+或者在./account/urls.py文件中指定，    url(r"^new-login/$", auth_views.login, {"template_name": "account/login.html"}),
+以一个字典类型，向默认的auth_views.login函数对象传template_name的值，
+2.3.2 判断用户是否登录 is_authenticated
+{% if user.is_authenticated %}
+ <li><a href="{% url 'account:user_logout' %}">Logout</a></li>
+{% else %}
+ <li><a href="{% url 'account:user_login' %}">LOGIN</a></li>
+{% endif %}
+
+2.3.3 内置的退出方法
+from django.contrib.auth impo views as auth_views   auth_views.logout(查看源代码)
+
+2.3.4 知识点
+1. HttpRequest对象
+当客户端向服务器发送请求时， Django会创建一个包含请求数据的HttpRequest以参数request传给视图函数，即request所引用的对象就是HttpRequest对象。
+• path 返回一个字符串，表示请求页面的路径（不包括域名〉，例如“/blog/admin/”。
+• GET：返回类字典对象，包括所有的 HTTP GET 参数。
+• POS 返回类字典对象 包括所有的 HTTP POST 参数。注意，不包括上传文件信息。
+• RQUEST 返回类字典对象 包括所有 POST和GET数据（先POST，后GET；在项目实践中 不推荐使用这个属性获得对象数据 ，使用 GET POST 更清晰 ）。
+• FILE 返回类字典对象，包含所有的上传文件 每个键是＜input type＝"file" name＝”” />
+中name的值，每个值是一个Python字典，该字典有以下三个键：filename，上传文件
+的文件名： content-type，上传文件的内容类型；content，上传文件的原始内容。
+注意 FILES 只有在请求方式为 POST 并且表单包括 enctype="multipart/form-data"属性
+时才会有数据，否则 FILES 就是一个空的类似宇典的对象
+• COOKIE 返回字典，包括所有的 cookie 键值对。
+• META ：返回字典，包含所有可能 HTTP头
+• user ：返回 django.contrib.auth.users.User 表示当前登录用户。如果当前没有用户
+登录 user 被设置成 jango.contrib.auth models AnonymousUser 例，可以用
+is_ anonymou()来区分登录用户和未登录用户。
+• sessio 返回可读 的类 典对象 表示当前的 ses ion
+2. HttpResponse 对象
+HttPResponse 是视图向客户端返回的对象。典型的用法就是将页面的内容作为 符串传递给 HttpptResponse 函数
+
+2.4 用户注册
+2.4.1 简单注册
+一般情况下，如果要将表单中的数据写入数据库表或者修改某些记录的值，就要让表单类继承 ModelForm 类;如果提交表单之后不会对数据库进行修改，则继承Form 类。
+ModeLForm类或者它的子类都具有save()方法,而Form没有
+class Meta:
+ model = User
+ fields = (”username", "email") 
+ 
+def clean_password2(self):    
+        cd = self.cleaned_data
+        if cd['password'] != cd['password2']:
+            raise forms.ValidationError("passwords do not match.")
+        return cd['password2']
+  
+语句class是一个内部类，其中我们需要声明本表单类所应用的数据模型，也就是将来表单的
+内容会写入到哪个数据库表中的哪些记录里面，这就是语句model的作用。表单类中的属性和数据
+模型类中的属性一一对应 有时候我们不必在表单中向数据模型中的所有宇段赋值（或者不需
+要把数据库表中所有的字段写入数据），可以用 fields ＝（”username”，”email”）来说明这里所选用
+的属性（数据库表中的字段〉 ，或者用 exclude列表说明所排除的属性。
+检查的动作在我们调用表单实例对象 is_valid（）方法时会被执行。
+new_user = user_form.save(commit=False)  #save方法是将表单数据保存到数据库，对应的是field中对应的值。commit=False 其结果是数据并没有被保存到数据库，而仅生成了一个数据对象，提高效率。
+new_user.set_password(user_form.cleaned_data['password'])   
+new_user.save()
+print(new_user, type(new_user))
+print(new_profile, type(new_profile))
+print(new_profile.user, type(new_profile.user))
+test04 <class 'django.contrib.auth.models.User'>
+test04 <class 'account.models.UserProfile'>
+test04 <class 'django.contrib.auth.models.User'>
+
+UserInfo.objects.create(user=new_user)
+models中的对象有create方法
+
+2.4.2 增加注册内容
+null 是针对数据库而言，如果 null=True, 表示数据库的该字段可以为空，那么在新建一个model对象的时候是不会报错的！！
+blank 是针对表单的，如果 blank=True，表示你的表单填写该字段的时候可以不填，即在前端界面中允许用户不填写。比如 admin 界面下增加 model 一条记录的时候。直观的看到就是该字段不是粗体。
+TextField ：与 CharField 样，区别在于保存的字符串长度是无限的（严格说应该受制于数据库程序和硬件系统），通常用于保存较大文本
+auto_now_add
+创建或添加对象时的时间, 修改或更新对象时, 不会更改时间
+auto_now
+凡是对对象进行操作(创建/添加/修改/更新),时间都会随之改变
+
+2.5 关于密码的操作
+2.5.1 修改密码
+password_change()
+password_change_done()
+按照从./mysite/urls.py 中配置的应用 namespace开始向下找，才能准确找到路径。 一个项目里面可能有多个应用。所以，我们可以
+post_change_redirect ＝reverse('namespace:name')
+2.5.2 重重密码
+password_reset()
+template_ name=’registration/password_ reset_ form.html’，这条语句是发送邮件的表单模板，
+mail template name registration/passwo _reset_email.html’，这条语句表示这个模板是发送给用户的邮件内容。
+subject_ template_ name='registration/password _reset_ subject.txt’，这条语句表示这个文件中的内容将是所发邮件的主题
+post_reset_redirect None ，这条语句指明跳转的目标，
+password_reset_done()函数显示发送成功的信息
+用户到自己的邮箱中查看邮件， 单击邮件中的链接， 根据 URL 配置就会调用视图函password_reset_confirm（），然后输入新的密码
+如果重置密码成功，就进行到最后了， 显示成功信息，这里使用的视图函数password _reset_complete()
+######邮件配置
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST_USER = "email@qq.com"
+EMAIL_HOST_PASSWORD = "password"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "email@qq.com"
+#######################################
+测试：
+from django.core.mail import send_mail 
+send_mail{"Learn Django",”There is a very good lesson of Django in itdiffer.com”，”your_account@qq.com”,['laoqishixun@l26.com'],fail_silently=False) 
+在./mysite/settings.py增加一行代码，追加到末尾即可这行代码的作用就是将发送的邮件直接显示在控制台
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+2.5.3 利用第三万应用重置密码
+sudo pip3 install django-password-reset 安装第三方的重置密码的应用
+在./misite/settings.py中注册应用
+
+2.6 维护个人信息
+2.6.l 个人信息的数据模型类和表单类
+数据模型类创建之后， 后面的开发步骤类似于前文所学习过的“注册”过程，依次是“编写表单类”、“创建视图函数”、“ 设置URL ”、“设置前端模板”，下面就按部就班地逐一展开。
+ aboutme = models.TextField(blank=True)
+models中的TextField 属性，它将对应HTML 中的Textarea。
+字段中有blank=True ，其含义是该项数据可以为空，即在前端界面中允许用户不填写。
+
+引入装饰器函数login required ，在视图函数被执行时判断用户是否登录
+from django.contrib.auth.decorators import login_required
+@login_required(login_url='/account/login/') 
+在具体使用时，向装饰器函数提供一个参数，参数login_url ＝’/account/login/’将没有登录的用户转到登录界面。
+2.6.2 展示个人信息
+from django.contrib.auth.decorators import login_required
+login(request,user)#request.user可以传递给所有的登录请求
+return HttpResponseRedirect('/account/my-information/') #其作用是实现URL 的转向
+2.6.3 编辑个人信息	
+save()方法
+每个ModelForm还具有一个save()方法。 这个方法根据表单绑定的数据创建并保存数据库对象。 
+ModelForm的子类可以接受现有的模型实例作为关键字参数instance的值，如果提供instance参数，则save()将更新该实例。
+如果没有提供，save()将创建模型的一个新实例。
+注意：instance接收的是一个实例化对象，普通的Form并没有instance参数，且当modelform中含有多对多字段时，调用save方法后，
+会自动帮你更新自己的表和多对多的第三张表，否则，你得自己手动更新自己的表，然后再通过多对多字段找到第三张表再次更新。
+
+ userprofile_form = UserProfileForm(initial={"birth":userprofile.birth, "phone":userprofile.phone})
+设置默认值 
+可以在创建 表单对象时传入如下参数initial={} 
+这是一个字典参数，对应每个字段的默认值， 可以在定义表的时候在没定义一个时段 中添加 initial='http://' 来设定默认值 
+2.6.4 上传和裁剪头像图片
+<button class="btn btn-primary btn-lg" id="upload_image" onclick="upload_image_layer()">upload my photo</button>
+一个按钮，不过这个按钮预留了一个操作“ onclick=” upload_ image_ layer()”
+头像图片上传和裁剪头像图片的功能的插件ImgCrop
+/ImgCrop$ tree
+•- css          一 style.css
+•- images   一 avatar.png 
+•- index.html
+•- js             一 cropbox.js •
+                 -  一  cropbox-min. js
+•-  jque1.11.1.min.js
+一种新的从前端向后端提交数据的方式，也是在网站开发中被普遍使用的Ajax
+$('#btnCrop').on('click', function(){
+	    //alert("图片上传喽");
+            $.ajax({
+	        url: '{% url "account:my_image" %}',
+		type: 'POST',
+		data: {"img": img},
+		success: function(e){
+		    //location.href= "{% url 'account:my_information' %}"
+                    if(e == "1"){        
+			parent.location.reload();
+		    } else {
+			alert("sorry, you are not lucky. the picutre can't been uploaded.");
+		    }
+		},
+	    });
+        })
+url ： 声明提交地址。
+type ：声明提交方式，有GET 和POST 两种， 此处使用POST.
+data ： 声明提交的数据内容。
+success ： 提交成功后，根据反馈结果实现页面跳转。
+
+在表单代码中增加｛% csrf_ token % ｝ ，才能实现数据的提交，在使用Ajax方式提交，Django 从安全角度考虑，也会拒绝了提交数据。
+这里使用其中一种，将一个名为csrf.js 的文件引入进来，
+<script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
+
+http://layer.layui.com/网站的提示框
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,118 @@
+目录
+一、MVC模型
+二、MTV模型
+三、Django基本命令
+1、 下载Django
+2、创建一个django project
+3、在mysite目录下创建应用
+4、启动django项目
+5、同步更改数据库表或字段（数据库迁移）
+6、清空数据库
+7、创建超级管理员
+8、Django项目环境终端
+9、查看更多命令
+10、静态文件配置
+四、视图层之路由配置系统（URLconf）
+五、视图层之视图函数（views）
+六、模板层（template）
+七、模型层基础（model）
+八、模型层进阶（model）
+ 
+正文
+参考博客：https://www.cnblogs.com/yuanchenqi/articles/7629939.html
+回到顶部
+一、MVC模型
+　　Web服务器开发领域里著名的MVC模式。
+　　所谓MVC就是把Web应用分为模型(M)，控制器(C)和视图(V)三层，他们之间以一种插件式的、松耦合的方式连接在一起。
+　　模型负责业务对象与数据库的映射(ORM)，视图负责与用户的交互(页面)，控制器接受用户的输入调用模型和视图完成用户的请求，其示意图如下所示：
+　　
+
+回到顶部
+二、MTV模型
+Django的MTV分别代表：
+       Model(模型)：负责业务对象与数据库的对象(ORM)
+       Template(模版)：负责如何把页面展示给用户
+       View(视图)：负责业务逻辑，并在适当的时候调用Model和Template
+       此外，Django还有一个urls分发器，它的作用是将一个个URL的页面请求分发给不同的view处理，view再调用相应的Model和Template。Django WEB框架示意图如下所示：
+　　
+
+　　一般是用户通过浏览器向我们的服务器发起一个请求(request)，这个请求回去访问视图函数，（如果不涉及到数据调用，那么这个时候视图函数返回一个模板也就是一个网页给用户），视图函数调用模型，模型去数据库查找数据，然后逐级返回，视图函数把返回的数据填充到模板中空格中，最后返回网页给用户。
+回到顶部
+三、Django基本命令
+1、 下载Django
+pip3 install django
+2、创建一个django project
+django-admin.py startproject mysite
+　　在命令执行的当前目录会生成mysite的工程，目录结构如下所示：
+　　
+
+文件介绍：
+manage.py——Django项目里面的工具，通过它可以调用django shell和数据库等。
+settings.py——包含了项目的默认设置，包括数据库信息，调试标志以及其他一些工作的变量。
+urls.py——负责URL模式映射到应用程序。
+3、在mysite目录下创建应用
+python manage.py startapp blog
+　　
+
+4、启动django项目
+python manage.py runserver 8080
+　　这样我们的django就启动起来了！当我们访问：http://127.0.0.1:8080/时就可以看到：
+　　
+
+5、同步更改数据库表或字段（数据库迁移）
+'''    python manage.py syncdb          注意：Django 1.7.1 及以上的版本需要用以下命令    python manage.py makemigrations    python manage.py migrate'''
+　　这种方法可以创建表，当你在models.py中新增了类时，运行它就可以自动在数据库中创建表了，不用手动创建。
+6、清空数据库
+python manage.py flush
+　　此命令会询问是 yes 还是 no, 选择 yes 会把数据全部清空掉，只留下空表。
+7、创建超级管理员
+'''    python manage.py createsuperuser          # 按照提示输入用户名和对应的密码就好了邮箱可以留空，用户名和密码必填          # 修改 用户密码可以用：    python manage.py changepassword username     '''
+8、Django项目环境终端
+（1）shell终端
+python manage.py shell
+　　这个命令和 直接运行 python 进入 shell 的区别是：你可以在这个 shell 里面调用当前项目的 models.py 中的 API，对于操作数据的测试非常方便。
+（2）数据库终端
+python manage.py dbshell
+　　Django 会自动进入在settings.py中设置的数据库，如果是 MySQL 或 postgreSQL,会要求输入数据库用户密码。
+在这个终端可以执行数据库的SQL语句。如果对SQL比较熟悉，可能喜欢这种方式。
+9、查看更多命令
+python manage.py
+　　查看所有的命令，在忘记子名称的时候非常有用。
+10、静态文件配置
+（1）生产环境——部署到web服务器处理（nginx）
+　　静态文件交由web服务器处理，Django本身不处理静态文件。简单的处理逻辑如下：
+URI请求-----> 按照Web服务器里面的配置规则先处理，以nginx为例，主要求配置在nginx.              conf里的location          |---------->如果是静态文件，则由nginx直接处理          |---------->如果不是则交由Django处理，Django根据urls.py里面的规则进行匹配
+　　以上是部署到web服务器后的处理方式，为了便于开发，Django提供了在开发环境的对静态文件的处理机制。
+（2）开发环境——static配置
+　　static主要指的是如css,js,images这样的文件：
+STATIC_URL = '/static/'      # 别名STATICFILES_DIRS = (    os.path.join(BASE_DIR,"static"),    # 实际名 ,即实际文件夹的名字 )
+　　注意点1：django对引用名和实际名进行映射，引用时，只能按照引用名来，不能按实际名去找
+<script src="/statics/jquery-3.1.1.js"></script>------error－－－－－不能直接用，必须用STATIC_URL = '/static/':<script src="/static/jquery-3.1.1.js"></script>
+　　注意点2：
+STATICFILES_DIRS = (    ("app01",os.path.join(BASE_DIR, "app01/statics")),) <script src="/static/app01/jquery.js"></script>
+　　访问地址：
+http://127.0.0.1:8000/static/jquery.js
+（3）开发环境——media配置
+　　settings.py:
+MEDIA_URL="/media/"MEDIA_ROOT=os.path.join(BASE_DIR,"app01","media","upload")
+　　urls.py:
+from django.views.static import serveurl(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+　　访问地址：
+http://127.0.0.1:8000/media/1.png
+　　media配置总结：
+ View Code
+回到顶部
+四、视图层之路由配置系统（URLconf）
+Django的路由层(URLconf)
+回到顶部
+五、视图层之视图函数（views）
+Django的视图层
+回到顶部
+六、模板层（template）
+Django的模板层(template)
+回到顶部
+七、模型层基础（model）
+model基础
+回到顶部
+八、模型层进阶（model）
+model进阶

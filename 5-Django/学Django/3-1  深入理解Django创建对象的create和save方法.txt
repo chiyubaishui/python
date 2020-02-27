@@ -1,0 +1,37 @@
+Django的模型(Model)的本质是类，并不是一个具体的对象(Object)。当你设计好模型后，你就可以对Model进行实例化从而创建一个一个具体的对象。Django对于创建对象提供了2种不同的save与create方法，我们来仔细分析下这两种方式有什么不同。
+
+我们来先看看下面这个例子。我们已经设计好了一个Person的模型（如下）。
+
+from django.db import models
+
+class Person(models.Model):
+    name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
+
+
+用save方法创建对象
+
+用save方法创建一个名叫john的具体对象，我们可以这么做。记住你只有用了save()方法后，Django才会将这个对象的信息存储到数据库中。
+
+john = Person(name="John Fourkas")
+john.save()
+
+用create方法创建对象
+
+正因为用save方法创建对象有2步，而且编程人员容易忘记加上save()，Django提供了一个更便捷的create方法，如下。如果你使用create方法，无需再加上save()。create方法不仅创建了新的对象，而且直接将信息存储到数据库里。
+
+john = Person.objects.create(name="John Fourkas")
+
+save与create方法比较
+
+create只能用于创建新的对象，在数据库层总是执行insert的操作。save不仅用于创建新的对象，也能用于更新对象的现有数据，在数据库层总是先执行update，找不到具体对象后再执行insert的操作。对于创建全新的对象，两者都可以。如果更新已有对象信息，只能用save()方法
+
+User自带的create_user方法
+
+如果你要Auth自带的User模型创建新对象，你需要使用create_user方法，而不是create方法，如下所示。create_user方法很有用，自动会给密码加Hash。
+
+
+
+

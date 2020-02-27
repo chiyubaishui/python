@@ -1,0 +1,25 @@
+
+django get_object_or_404 是django shortcuts模块里面一个比较简便的方法，特别是用django get来操作数据库的时候，可以帮 我们少写一些代码，加快开发速度。
+get_object_or_404的介绍： 我们原来调用django 的get方法(model.object.get())，如果查询的对象不存在的话，会抛出一个DoesNotExist的异常， 现在我们调用django get_object_or_404方法，它会默认的调用django 的get方法， 如果查询的对象不存在的话，会抛出一个Http404的异常，我感觉这样对用户比较友好， 如果用户查询某个产品不存在的话，我们就显示404的页面给用户，比直接显示异常好。
+get_object_or_404一般需要3个参数： 
+1. modelname：一个model,manage,或query对象。 
+2. *args 
+3. **kwargs 而后面的*args,**kwargs则是查询的时候用到的参数。
+
+下面用个例子看来下：
+from django.shortcuts import get_object_or_404 
+product = get_object_or_404(Product, pk=1) 
+Product是要查询的model,后面的pk＝1是查询条件，你可以根据你需要查询的情况来写条件。 上面的例子也可以写成下面这样的形式：
+from django.http import Http404
+
+try:
+    product = Product.objects.get(pk=1)
+except MyModel.DoesNotExist:
+    raise Http404
+看来用django get_object_or_404方法可以省下你很多操作，有兴趣可以看看django.shortcuts 模块包里面的其他的方法， 会让你能够在提高编程的效率。
+ 
+ 
+#####################
+用model.object.get()方法查询对象，如果对象不存在的话，会抛出一个DoesNotExist的异常，这样将会使模型层与视图层耦合在一起
+Django最重要的一个设计目标就是保持松耦合。 用get_object_or_404可以使模型层和视图层低耦合。
+一些可控的耦合将会在django.shortcuts 模块中介绍

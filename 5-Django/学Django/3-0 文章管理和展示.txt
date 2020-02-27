@@ -1,0 +1,118 @@
+3.1 管理文章栏目
+3.1.l 设置栏目
+鼠标悬停
+通过添加 .table-hover 类可以让 <tbody> 中的每一行对鼠标悬停状态作出响应。
+<table class="table table-hover">
+  	<thead>
+  <tr>
+    			<th>序号</th>
+  			  <th>姓名</th>
+  			  <th>爱好</th>
+ 		 </tr>
+  	</thead>
+ 	 <tbody>
+  <tr>
+  			  <td>1</td>
+  			  <td>Egon</td>
+  			  <td>杠娘</td>
+  		</tr>
+  	</tbody>
+</table>
+forloop.counter可以在for循环中得到其索引值,从1开始
+columns = ArticleColumn.objects.filter(user=request.user)
+以上语句本质上是两条语句合并起来的， 一条是ArticleColumn.objects.all()，然后根据
+use=request.user 的条件进行筛选，即ArticleColumn.objects.all().filter(user=request.user）， 这两个
+查询行为可以用以上语句这样的一条指令来表达。
+get()和自filter()的区别在于，如果查询对象不存在， get() 会报错，而自lter()返回空。
+get的结果是一个实例对象，二filter()的结果是一个queryset
+4 . 增加新栏目
+<p class="text-right"><button id= "add_column" onclick="add_column()" class="btn btn-primary">add column</button></p>
+当用户单击这个按钮时，触发add_column()函数（ Jav aScript 函数）
+function add_column(){       	#与上面的绑定的函数add_column()相对应
+    var index = layer.open({       #基础参数，默认
+   type:1,				         #layer提供了5种层类型。1（页面层）
+   skin:"layui-layer-rim",            #样式类名
+   area: ["400px", "200px"],       #宽高
+   title: "新增栏目",                   #标题
+   content: '<div class="text-center" style="margin-top:20px"><p>请输入新的栏目名称</p><p>{{column_form.column}}</p></div>',      #content可传入的值是灵活多变的，不仅可以传入普通的html内容，还可以指定DOM，更可以随着type的不同而不同。
+   btn:['确定', '取消'],   #按钮
+   yes: function(index, layero){
+       column_name = $('#id_column').val();
+       $.ajax({
+      url:'{% url "article:article_column" %}',
+      type:'POST',
+      data:{"column":column_name},
+      success:function(e){
+          if(e=="1"){
+          parent.location.reload();
+          layer.msg("good");
+          }else{
+              layer.msg("此栏目已有，请更换名称")
+          }
+      },
+       });
+   },
+   btn2: function(index, layero){
+   layer.close(index);
+   }
+    });
+}
+具体说明文档   https://www.layui.com/doc/modules/layer.html
+Glyphicons 字体图标：
+<a name="edit" href="javascript:" onclick="edit_column(this, {{ column.id }})"><span class="glyphicon glyphicon-pencil"></span></a>
+<a name="delete" href="javascript:" onclick="del_column(this, {{ column.id }})"><span class="glyphicon glyphicon-trash" style="margin-left:20px;"></span></a>
+
+a标签绑定事件
+
+在jQuery中获取name属性为test的元素 但是这个test是赋值给变量的 如var name='test'; 即要获取name属性为变量name的元素 请问jquery怎么写？
+var name = $(the).parents("tr").children("td").eq(1).text();
+<input type="text" id="new_name" value="'+name+'">
+<p>是否确定删除{'+name+'}栏目</p>
+//用于刷新父窗口整个页面
+parent.location.reload();
+
+{% for column in columns %}
+{% empty %}
+<p>还没有设置栏目，太懒了。</p>
+{% endfor %}
+
+提交表单的csrf问题， 这里使用语句在视图函数前面添加装饰器@csrf_exempt 的方式也是解决提交表单中遇到的csrf问题的一种方式。
+3.1.2 编辑栏目
+from django.views.decorators.http import require_POST
+装饰器＠require_ POST ， 所以一定要在文件顶部声明from django. views.decorators. http import require POST ， 使用这个装饰器的目的就是保证此视图函数只接收通过POST 方式提交的数据。
+
+3.1.4 知识点
+1 . 模板语法：继承和包含
+在子模板中继承的方式是使用｛ %extends ” base . html ”%｝， 并且放在该页面中的第一个模板
+标签位置， 一般放在第一行最保险了。在子模板中如果重写了父模板中的某个块，则按照子模
+板中的方式显示。
+在模板中还可以使用｛ % i nclude ” templatename.html ” %｝包含其他模板。
+为了更灵活地使用JavaScript 和css ，通常不在base.html 里面引入相关文件。在真实的项
+目中，建议在base.html 中设定｛% b lock js %} {% endblock %｝和｛% block css %} {% endblock
+%｝，然后在子模板中重写这两个块，最后调入该模板页面所需要的JavaScript 和css 。
+
+3. 2 发布和显示文章
+3 .2.l 简单的文章发布
+要访问这篇文章， 一种方法是使用这篇文章的id ，比如http://www.itdiffer.com/article/231 , 231 就是这篇文章在数据库表中的id ：还有另外一种方法， 是直接在URL 中显示文章的标题（http://www.itdiffer.com/article/ LearnPython in itdiffer.com ），但实际上不能这样，因为在URL 里面， 空格都是用“ %20 ”来表示的，
+所以上面那个地址最终表现形式应该是http://www.itdiffer.com/article/ Leam%20Python%
+2 0in%20itdiffer.com 。这种显示不是－个很友好的方案，这时候s l ug 就可以发挥作用了， 它实现
+的结果是http://www.itdiffer.com/article/Leam-Python- in-itdi tdiffer.com ， 看起来清清爽爽了， 井且这
+种方式对搜索引擎也是友好的。
+
+sudo pip install awesome - slugify
+from slugify import slugify
+>> slugify(” 跟老齐学”）
+’ Gen-Lao-Qi-Xue ’
+>> slugify("Learn python in itdiffer.com")
+'Learn-python-in-itdiffer-com'
+
+
+class Meta:
+    index_together = (('id', 'slug'),)     #用是对数据库中这两个字段建立索引
+
+def save(self, *args, **kwargs):         #重写save方法
+    self.slug = slugify(self.title)
+    super(ArticlePost, self).save(*args, **kwargs)
+
+3.2 .2 使用Markdown
+3 .2.3 文章标题列表

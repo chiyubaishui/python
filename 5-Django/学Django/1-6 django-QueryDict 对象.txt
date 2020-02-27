@@ -1,0 +1,8 @@
+在 HttpRequest 对象中,属性 GET 和 POST 得到的都是 django.http.QueryDict 所创建的实例。这是一个 django 自定义的类似字典的类，用来处理同一个键带多个值的情况。
+　　在 python 原始的字典中，当一个键出现多个值的时候会发生冲突，只保留最后一个值。而在 HTML 表单中，通常会发生一个键有多个值的情况，例如 <select multiple> （多选框）就是一个很常见情况。
+　　request.POST 和request.GET 的QueryDict 在一个正常的请求/响应循环中是不可变的。若要获得可变的版本，需要使用.copy()方法。
+>>> QueryDict('a=1&a=2&c=3')
+<QueryDict: {'a': ['1', '2'], 'c': ['3']}>  #值是一个列表，如果直接使用字典的方式获取，会有异常
+
+.QueryDict.getlist(key, default)
+　　以Python 列表形式返回所请求的键的数据。如果键不存在并且没有提供默认值，则返回空列表。它保证返回的是某种类型的列表，除非默认值不是列表。

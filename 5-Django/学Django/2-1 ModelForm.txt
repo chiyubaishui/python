@@ -1,0 +1,191 @@
+1、介绍
+我们在设计Form表单的时候，一般都会把字段名设置成和数据库(ORM)的字段名一模一样，因为这样设计的话，你后面设计的逻辑中，如果需要创建用户，
+那么可以从表单的数据中提取出来，用关键字参数**kwargs直接创建，如果Form表单的字段和ORM的不一样，那么创建用户的时候就需要一个个指定，
+比如username=name,password=pwd等。
+
+那么问题来了，Form表单的字段和ORM的字段一样，那么写Fomr表单的时候不就等于再写一次ORM的字段吗，有简单的方法吗？
+
+显然是有的，Django给我们考虑到了。
+
+用法是：
+建Form表单类的时候继承ModelForm，在Meta类里面指定继承ORM的哪些字段，也可以新增你要的字段。
+
+2、示例
+from django import forms
+from crm.models import UserProfile  # 导入UserProfile这张ORM表
+
+
+class RegForm(forms.ModelForm):  # 继承ModelForm
+    # 新增的字段(UserProfile中并没有这个字段的)
+    re_password = forms.CharField(
+        label='确认密码',
+        widget=forms.widgets.PasswordInput()
+    )
+
+    class Meta:
+        model = UserProfile  # 表明使用UserProfile这张表作为模型
+        # fields = '__all__'  # 展示UserProfile的所有字段
+        fields = ['email', 'password', 're_password', 'name', 'mobile']  # 按照顺序展示列表中的字段
+        # exclude = ['']  # 把不需要的字段排查，其他字段展示出来
+        labels = {
+            'email': '邮箱'
+        }
+
+        error_messages = {
+            'email': {
+                'max_length': '邮箱长度过长',
+                'unique': '邮箱不能为空'
+            }
+        }
+
+        widgets = {
+            'password': forms.widgets.PasswordInput()
+        }
+
+    # 重写init方法批量应用bootstrap样式
+    def __init__(self):
+        super().__init__()
+        # self.fields是一个大字典，key是字段名，value是字段对象
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})
+
+
+3、class Meta下的配置
+1. model = 'ORM类名'
+
+2. 字段
+    1. fields = '__all__'  # 展示ORM表的所有字段
+    2. fields = ['要展示的字段1', '字段2']  # 指定的字段显示出来，其他字段不显示
+    3. exclude = ['需要排除的字段1', ...]  # 指定的字段不显示，其他字段都显示出来
+
+3. labels = {
+      '字段名1': 'label名1',
+      '字段名2': 'label名2',
+   }
+
+4. error_messages = {
+      '字段名': {
+        'min_length': '最小长度不能小于xx位',
+        'max_length': '最大长度不能超过xx位',
+        'required': '这个字段是必填项'
+      }
+   }
+
+5. widgets = {
+        'password': forms.widgets.PasswordInput()
+   }
+
+6.help_texts = None  # 帮助提示信息
+
+7. 校验
+    1. 可以在model的字段中配置validators
+    2. 自己在Form类中重写字段，定义validators配置
+    3. 局部钩子方法和全局钩子方法 同Form的用法
+
+
+
+
+4、ModelForm中含有外键字段
+创建ModelForm的时候，如果model中有含有外键字段，
+那么这个外键字段在ModelForm默认是单选的select字段，label默认是model的verbose_name的值，如果没有则显示字段名，
+或者可以在modelform的Meta里面通过labels设置，choices默认是这个外键关联的所有数据,HTML上的select标签的value默认这个外键关联的表对应的主键，
+显示的文本默认是外键关联的表对应的对象。
+注意：如果是多对多字段，则生成多选的select字段
+
+例如：
+1.models.py
+class ConsultRecord(models.Model):
+    customer = models.ForeignKey('Customer', verbose_name="所咨询客户")
+
+
+
+2.modelsform
+class ConsultRecordForm(forms.ModelForm):
+
+    class Meta:
+        model = ConsultRecord
+        fields = '__all__'
+
+上面的modelsform字段customer实际上等于下面这个普通的form
+class ConsultRecordForm(forms.Form):
+
+    customer = forms.fields.ChoiceField(
+        choices=Customer.objects.all().values_list('id', 'name'),
+        label="所咨询客户",  # verbose_name
+        widget=forms.widgets.Select()
+    )
+
+
+5、save()方法
+每个ModelForm还具有一个save()方法。 这个方法根据表单绑定的数据创建并保存数据库对象。 
+ModelForm的子类可以接受现有的模型实例作为关键字参数instance的值，如果提供instance参数，则save()将更新该实例。
+如果没有提供，save()将创建模型的一个新实例。
+注意：instance接收的是一个实例化对象，普通的Form并没有instance参数，且当modelform中含有多对多字段时，调用save方法后，
+会自动帮你更新自己的表和多对多的第三张表，否则，你得自己手动更新自己的表，然后再通过多对多字段找到第三张表再次更新。
+
+1.没有提供参数instance，save()创建新的实例
+def reg(request):
+    if request.method == 'POST':
+        form_obj = RegForm(request.POST)
+        # form_obj是一个ModelForm对象，它和数据库的Model类对应
+        form_obj.save()  # 相当于UserProfile.objects.create(**form_obj.cleaned_data)
+        return redirect('/login/')
+
+
+2.提供参数instance，save()跟新这个实例
+1.models.py
+from django.db import models
+
+# Create your models here.
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=12)
+    addr = models.CharField(max_length=255)
+
+
+2.forms.py
+from django import forms
+from myapp.models import Publisher
+
+
+class PublisherForm(forms.ModelForm):
+
+    class Meta:
+        model = Publisher
+        fields = '__all__'
+
+
+3.views.py
+from django.shortcuts import render, redirect
+from myapp.models import Publisher
+from myapp.forms import PublisherForm
+# Create your views here.
+
+
+def publisher_list(request):
+    data = Publisher.objects.all()
+    return render(request, 'publisher_list.html', {'publisher_list': data})
+
+
+def edit_publisher(request):
+    edit_id = request.GET.get('id')
+    publisher_obj = Publisher.objects.filter(id=edit_id).first()
+    # instance=某个对象：把这个对象的原始数据填到PublisherForm这个表单里面
+    form_obj = PublisherForm(instance=publisher_obj)
+    if request.method == 'POST':
+        # 把request.POST的数据更新到instance=这个对象里面
+        form_obj = PublisherForm(request.POST, instance=publisher_obj)  # DRF框架的时候也会用到
+        if form_obj.is_valid():
+            # 去数据库编辑
+            # 方法一：
+            # new_name = form_obj.cleaned_data.get('name')
+            # new_addr = form_obj.cleaned_data.get('addr')
+            # publisher_obj.name = new_name
+            # publisher_obj.addr = new_addr
+            # publisher_obj.save()
+
+            # 方法二：
+            form_obj.save()
+            return redirect('/publisher_list/')
+    return render(request, 'edit_publisher.html', {'form_obj': form_obj})
