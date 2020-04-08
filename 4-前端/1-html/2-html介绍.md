@@ -55,9 +55,9 @@ html结构
 
 复制代码
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en">  #lang表示文件的主要的语言
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8">  #编码
     <title>Document</title>
 </head>
 <body>
@@ -70,7 +70,7 @@ html结构
 开头的这一行，就是文档声明头，DocType Declaration，简称DTD。此标签可告知浏览器文档使用哪种 HTML 或 XHTML 规范。
 
 
-头标签（head）
+头标签（head），不会在浏览器中显示
 head标签都放在头部分之间。这里面包含了：<title>、<meta>、<link>，<style>
 
 <title>：指定整个网页的标题，在浏览器最上方显示。

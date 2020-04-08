@@ -1,0 +1,67 @@
+0、注释:
+ <!--注释内容-->
+1、标题和段落：
+标题 -> 双标签 ： <h1></h1> ... <h6></h6>
+在一个网页中，h1标题最重要，并且一个.html文件中只出现一次h1标签。
+h5,h6标签在网页中不经常使用。
+
+段落 -> 双标签 ： <p></p>
+
+2、文本修饰标签
+	强调 -> 双标签：<strong></strong>、<em></em>
+		区别：一个加粗，一个斜体，strong强调更强
+	上标：<sup></sup>
+	下标：<sub></sub>
+	删除文本：<del></del>
+	插入文本：<ins></ins>
+	
+3、图片标签：<img src="smiley-2.gif" alt="Smiley face" width="42" height="42">
+	alt：图像的替代文本；
+	src：显示图像的URL；
+	title：是在图片正常加载鼠标划上去显示的值
+	height：图像的高度；
+	width：图像的宽度；
+
+4、链接标签：<a href="http://www.w3school.com.cn" target="_blank">Visit W3School</a>
+	href 属性，它指示链接的目标
+	target 属性规定在何处打开被链接文档，在被点击时的同一框架中打开被链接文档（默认）_self，在新窗口中打开被链接文档_blank	
+	<base> 标签为页面上的所有链接规定默认地址或默认目标。head中添加<base target="_blank" />
+	
+	锚点跳转：
+	使用id定位   <a href="# xx"></a>（xx位置代表设置好的每一个id)
+	使用name定位 <a href="#5F">锚点5</a> <a name="5F">1111111</href>
+
+5、特殊字符	
+	空格	&nbsp;
+	>	&gt;
+	<	&lt;
+	&	&amp;
+	¥	&yen;
+	版权	&copy;
+	注册	&reg;
+	
+6、列表：
+	无序列表
+	<ul type="disc">
+		<li>第一项</li>
+		<li>第二项</li>
+	</ul>
+	有序列表
+	<ol type="1" start="2">
+		<li>第一项</li>
+		<li>第二项</li>
+	</ol>
+	标题列表
+	<dl>
+		<dt>标题1</dt>
+		<dd>内容1</dd>
+		<dt>标题2</dt>
+		<dd>内容1</dd>
+		<dd>内容2</dd>
+	</dl>
+
+
+
+
+
+	
