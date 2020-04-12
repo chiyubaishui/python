@@ -7,7 +7,8 @@
 src="/skins/loveisintheair/images/logo.gif"  : 图片的链接地址，可以使网络的地址，也可以使本地
 alt="hello"  ： 图片下面的说明
 title="hello"  ： 鼠标放置到图片上显示文字
-
+height：图像的高度；
+width：图像的宽度；
 注释：从技术上讲，图像并不会插入 HTML 页面中，而是链接到 HTML 页面上。
 <img> 标签的作用是为被引用的图像创建占位符。
 提示：通过在 <a> 标签中嵌套 <img> 标签，给图像添加到另一个文档的链接。

@@ -60,6 +60,36 @@ h5,h6标签在网页中不经常使用。
 		<dd>内容2</dd>
 	</dl>
 
+7、表格
+	表格		描述
+	<table>	定义表格
+	<caption>	定义表格标题
+	<th>	定义表格的表头
+	<tr>	定义表格的行
+	<td>	定义表格的单元
+	<thead>	定义表格的页眉
+	<tbody>	定义表格的主体
+	<tfoot>	定义表格的页脚
+	<col>	定义表格的列属性
+	
+	单元格的合并：
+        colspan：合并列
+        rowspan：合并行
+	属性：
+        border：边框线大小
+        width：表格的宽度
+		cellspacing：单元格之间的空间
+		cellpadding：单元格内的空间
+		align：表示左右居中，left，center，right
+		valign：控制上下居中，top, middle, bottom
+8、form
+功能：
+
+表单用于向服务器传输数据，从而实现用户与Web服务器的交互
+
+表单能够包含input系列标签，比如文本字段、复选框、单选框、提交按钮等等。
+
+表单还可以包含textarea、select、fieldset和 label标签。
 
 
 

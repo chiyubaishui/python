@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>表格表单组合</title>
+</head>
+<body>
+  <form>
+    <table border="1" cellpadding="30">
+      <tbody>
+        <tr>
+          <td rowspan="4">总体信息</td>
+          <td colspan="2" align="center">用户注册</td>
+        </tr>
+        <tr>
+          <td align="right">用户名:</td>
+          <td><input type="text" placeholder="请输入用户名"></td>
+        </tr>
+        <tr>
+          <td align="right">密码:</td>
+          <td><input type="password" placeholder="请输入密码"></td>
+        </tr>
+        <tr>
+          <td colspan="2" align="center"><input type="submit">&nbsp;&nbsp;&nbsp;
+          <input type="reset"></td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</body>
+</html>
