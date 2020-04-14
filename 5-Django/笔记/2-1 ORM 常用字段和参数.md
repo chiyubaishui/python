@@ -25,4 +25,15 @@
 		正向查询：通过学生来查找班级
 			ret = models.Student..objects.all() 
 			ret[0].theclass.name #theclass其实是一个指向Classes的对象，并不是一个属性值，theclass_id才是一个具体的值，数据库中表的字段就是theclass_id。
+			
+	2、ManyToManyField：多对多关联关系，将会创建出第三张表来说明对应关系
+		class Author(models.Model):
+			id = models.AutoField(primary_key=True)
+			name = models.CharField(max_length=16, null=False, unique=True)
+			book = models.ManyToManyField(to="Book") 
+			# 将会生成第三张表author_book
+			# author_obj = models.Author.objects.get(id=1)
+			# author_obj.book 返回的为app01.Books.None，ORM封装的一个管理对象
+			# author_obj.book.all() 返回的为<QuerySet [<Books: Books object>, <Books: Books object>]>
+		
 
