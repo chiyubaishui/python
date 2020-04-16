@@ -31,7 +31,7 @@
 	]
 	# 静态文件夹的位置
 	
-1.0.5 创建应用(application)
+1.0.5 创建应用(application):用来隔离不同功能模块的代码
 	python manage.py startapp blog ，应用创建后需要在settings.py文件中注册应用"'blog.apps.BlogConfig'"
 	目录和文件说明：
 	1. manage.py  在创建一个Django 项目后， manage.py被自动生成在项目的根目录中，它是对django-admin.py的简单封装，同样能够实现命令行操作。

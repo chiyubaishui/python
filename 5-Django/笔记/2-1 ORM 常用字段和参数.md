@@ -35,5 +35,6 @@
 			# author_obj = models.Author.objects.get(id=1)
 			# author_obj.book 返回的为app01.Books.None，ORM封装的一个管理对象
 			# author_obj.book.all() 返回的为<QuerySet [<Books: Books object>, <Books: Books object>]>
+			# 在前端HTML中可以写author_obj.book.all，同时在for循环中直接使用变量author_obj.book.all，{% for book in author.book.all %}
 		
 

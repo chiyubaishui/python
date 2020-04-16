@@ -18,3 +18,5 @@
         edit_publisher.name = new_name
         edit_publisher.save()  # 把修改提交到数据库
 	<3> set()：更新model对象的关联对象。
+		new_book = request.POST.getlist("add_book_name")
+		new_author_obj.book.set(new_book)
