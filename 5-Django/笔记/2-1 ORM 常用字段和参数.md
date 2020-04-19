@@ -7,8 +7,20 @@
 		字符类型，必须提供max_length参数， max_length表示字符长度。
 		null:布尔值，用于表示某个字段是否可以为空。 
 		unique：布尔值，用于表示该字段在此表中必须是唯一的。
-		
-2.2 关系字段
+	3、IntegerField：一个整数类型,范围在 -2147483648 to 2147483647。
+	4、DateField： 日期字段，日期格式  YYYY-MM-DD，相当于Python中的datetime.date()实例。
+	5、DateTimeField：日期时间字段，格式 YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]，相当于Python中的datetime.datetime()实例。
+		DatetimeField、DateField、TimeField这个三个时间字段，都可以设置如下属性。
+		auto_now_add：配置auto_now_add=True，创建数据记录的时候会把当前时间添加到数据库。
+		auto_now：配置上auto_now=True，每次更新数据记录的时候会更新该字段。
+	6、DecimalField: 一个固定精度的十进制数类型，使用时必须要传递两个参数，max_digits数字的最大总长度(不含小数点),decimal_places小数部分的长度	
+2.2 字段参数
+	null：用于表示某个字段可以为空。
+	unique;如果设置为unique=True 则该字段在此表中必须是唯一的 。
+	db_index:如果db_index=True 则代表着为此字段设置数据库索引。
+	default:为该字段设置默认值。
+	
+2.3 关系字段
 	1、ForeignKey
 		外键类型在ORM中用来表示外键关联关系，一般把ForeignKey字段设置在 '一对多'中'多'的一方。
 		ForeignKey可以和其他表做关联关系同时也可以和自身做关联关系。
@@ -16,6 +28,9 @@
 			to 设置要关联的表，表引号
 			to_field 设置要关联的表的字段
 			related_name 反向操作时，使用的字段名，用于代替原反向查询时的'表名_set'。
+			on_delete:当删除关联表中的数据时，当前表与其关联的行的行为。
+				models.CASCADE:删除关联数据，与之关联也删除
+			db_constraint:是否在数据库中创建外键约束，默认为True。
 			例如：
 				class Classes(models.Model):
 					name = models.CharField(max_length=32)				
@@ -25,8 +40,31 @@
 		正向查询：通过学生来查找班级
 			ret = models.Student..objects.all() 
 			ret[0].theclass.name #theclass其实是一个指向Classes的对象，并不是一个属性值，theclass_id才是一个具体的值，数据库中表的字段就是theclass_id。
-			
-	2、ManyToManyField：多对多关联关系，将会创建出第三张表来说明对应关系
+	2、ForeignKey操作
+		1)、正向查找：
+			对象查找（跨表）
+				语法：对象.关联字段.字段
+				示例：
+					book_obj = models.Book.objects.first()  # 第一本书对象
+					print(book_obj.publisher)  # 得到这本书关联的出版社对象
+					print(book_obj.publisher.name)  # 得到出版社对象的名称
+			字段查找（跨表）
+			语法：关联字段__字段
+				示例：
+					print(models.Book.objects.values_list("publisher__name"))
+		2)、反向操作
+			对象查找
+				语法：obj.表名_set
+				示例：
+					publisher_obj = models.Publisher.objects.first()  # 找到第一个出版社对象
+					books = publisher_obj.book_set.all()  # 找到第一个出版社出版的所有书，<QuerySet [<Books: Books object>]>
+					titles = books.values_list("title")  # 找到第一个出版社出版的所有书的书名
+			字段查找
+				语法：表名__字段
+					示例：
+					titles = models.Publisher.objects.values_list("book__title")
+					
+	3、ManyToManyField：多对多关联关系，将会创建出第三张表来说明对应关系
 		class Author(models.Model):
 			id = models.AutoField(primary_key=True)
 			name = models.CharField(max_length=16, null=False, unique=True)
@@ -36,5 +74,46 @@
 			# author_obj.book 返回的为app01.Books.None，ORM封装的一个管理对象
 			# author_obj.book.all() 返回的为<QuerySet [<Books: Books object>, <Books: Books object>]>
 			# 在前端HTML中可以写author_obj.book.all，同时在for循环中直接使用变量author_obj.book.all，{% for book in author.book.all %}
-		
-
+	4、方法
+		create() 创建一个新的对象，保存对象，并将它添加到关联对象集之中，返回新创建的对象。
+			通过作者创建一本书,会自动保存
+	        做了两件事：
+		    1. 在book表里面创建一本新书，2. 在作者和书的关系表中添加关联记录
+            author_obj.books.create(title="金老板自传", publisher_id=2)
+		add() 把指定的model对象添加到关联对象集中。
+			book_obj = models.Book.objects.get(id=4)
+            author_obj.books.add(book_obj)
+            添加多个
+            book_objs = models.Book.objects.filter(id__gt=5)
+            author_obj.books.add(*book_objs)  # 要把列表打散再传进去
+            直接添加id
+            author_obj.books.add(9)
+		set() 更新model对象的关联对象。
+		remove() 从关联对象集中移除执行的model对象
+			book_obj = models.Book.objects.get(title="跟金老板学开飞船")
+			author_obj.books.remove(book_obj)
+			直接删除id
+			author_obj.books.remove(8)
+		clear() 从关联对象集中移除一切对象。	
+			jing_obj = models.Author.objects.get(id=2)	
+			jing_obj.books.clear()
+2.1.4 聚合查询和分组查询
+	1、聚合
+		aggregate()是QuerySet 的一个终止子句，意思是说，它返回一个包含一些键值对的字典。
+		键的名称是聚合值的标识符，值是计算出来的聚合值。键的名称是按照字段和聚合函数的名称自动生成出来的。
+		用到的内置函数：
+		from django.db.models import Avg, Sum, Max, Min, Count
+		示例：
+			>>> from django.db.models import Avg, Sum, Max, Min, Count
+			>>> models.Book.objects.all().aggregate(Avg("price"))
+			{'price__avg': 13.233333}
+			
+			如果你想要为聚合值指定一个名称，可以向聚合子句提供它。			
+			>>> models.Book.objects.aggregate(average_price=Avg('price'))
+			{'average_price': 13.233333}
+			
+			如果你希望生成不止一个聚合，你可以向aggregate()子句中添加另一个参数。所以，如果你也想知道所有图书价格的最大值和最小值，可以这样查询：			
+			>>> models.Book.objects.all().aggregate(Avg("price"), Max("price"), Min("price"))
+			{'price__avg': 13.233333, 'price__max': Decimal('19.90'), 'price__min': Decimal('9.90')}			
+			
+			

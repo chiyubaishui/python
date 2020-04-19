@@ -65,7 +65,23 @@ ORM的缺点是会在一定程度上牺牲程序的执行效率。
 
 	2.删除表 注释掉application下面的models.py中的对应的class，然后执行两个命令
 	3.修改表 修改掉application下面的models.py中的对应的字段，然后执行两个命令
+
+2.0.4 元信息
+	ORM对应的类里面包含另一个Meta类，而Meta类封装了一些数据库的信息。主要字段如下:
 	
+	db_table
+	ORM在数据库中的表名默认是 app_类名，可以通过db_table可以重写表名。
+	
+	index_together
+	联合索引。
+	
+	unique_together
+	联合唯一索引。
+	
+	ordering
+	指定默认按什么字段排序。
+	
+	只有设置了该属性，我们查询到的结果才可以被reverse()。
 	
 		
 		

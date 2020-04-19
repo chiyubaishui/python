@@ -100,7 +100,53 @@
 		{# 使用我们自定义的filter #}
 		{{ somevariable|cut:"0" }}
 		{{ d.name|addSB }}
-		
+
+	14、simple_tag
+		和自定义filter类似，只不过接收更灵活的参数。自定义simple_tag和filter代码文件摆放位置相同
+		定义注册simple tag
+			@register.simple_tag(name="plus")
+			def plus(a, b, c): #自定义多个参数
+				return "{} + {} + {}".format(a, b, c)
+		使用自定义simple tag
+			{% load app01_demo %}
+			{# simple tag #}
+			{% plus "1" "2" "abc" %}
+	
+	15、inclusion_tag：多用于返回html代码片段
+	示例：
+		templatetags/my_inclusion.py
+			from django import template
+			register = template.Library()
+			@register.inclusion_tag('result.html')
+			def show_results(n):
+				n = 1 if n < 1 else int(n)
+				data = ["第{}项".format(i) for i in range(1, n+1)]
+				return {"data": data}
+
+		templates/snippets/result.html
+			<ul>
+			{% for choice in data %}
+				<li>{{ choice }}</li>
+			{% endfor %}
+			</ul>
+			
+		templates/index.html
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+			<meta charset="UTF-8">
+			<meta http-equiv="x-ua-compatible" content="IE=edge">
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<title>inclusion_tag test</title>
+			</head>
+			<body>
+			
+			{% load inclusion_tag_test %}
+			
+			{% show_results 10 %}
+			</body>
+			</html>
+
 3.1.3 tag
 	1、for循环
 	普通for循环
