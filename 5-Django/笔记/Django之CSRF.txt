@@ -1,0 +1,22 @@
+简介
+django为用户实现防止跨站请求伪造的功能，通过中间件 django.middleware.csrf.CsrfViewMiddleware 来完成。而对于django中设置防跨站请求伪造功能有分为全局和局部。
+
+全局：中间件 django.middleware.csrf.CsrfViewMiddleware
+
+局部：
+@csrf_protect，为当前函数强制设置防跨站请求伪造功能，即便settings中没有设置全局中间件。
+@csrf_exempt，取消当前函数防跨站请求伪造功能，即便settings中设置了全局中间件。
+
+注意：from django.views.decorators.csrf import csrf_exempt,csrf_protect
+
+原理
+当用post提交数据的时候，django会去检查是否有一个csrf的随机字符串，如果没有就会报错，这也是之前我们一直将其注释的原因，错误如下：
+
+在django内部支持生成这个随机字符串
+
+通过form提交
+在form表单里面需要添加{%csrf_token%}
+
+这样当你查看页面源码的时候,可以看到form中有一个input是隐藏的
+
+总结原理：当用户访问login页面的时候，会生成一个csrf的随机字符串，，并且cookie中也存放了这个随机字符串，当用户再次提交数据的时候会带着这个随机字符串提交，如果没有这个随机字符串则无法提交成功

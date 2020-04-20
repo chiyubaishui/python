@@ -1,4 +1,4 @@
-2.1 ORM 常用字段和参数
+2.1.1 ORM 常用字段和参数
 	1、AutoField	
 		id = models.AutoField(primary_key=True) # 创建一个自增的主键字段
 		int自增列，必须填入参数 primary_key=True。当model中如果没有自增列，则自动会创建一个列名为id的列。
@@ -14,13 +14,13 @@
 		auto_now_add：配置auto_now_add=True，创建数据记录的时候会把当前时间添加到数据库。
 		auto_now：配置上auto_now=True，每次更新数据记录的时候会更新该字段。
 	6、DecimalField: 一个固定精度的十进制数类型，使用时必须要传递两个参数，max_digits数字的最大总长度(不含小数点),decimal_places小数部分的长度	
-2.2 字段参数
+2.1.2 字段参数
 	null：用于表示某个字段可以为空。
 	unique;如果设置为unique=True 则该字段在此表中必须是唯一的 。
 	db_index:如果db_index=True 则代表着为此字段设置数据库索引。
 	default:为该字段设置默认值。
 	
-2.3 关系字段
+2.1.3 关系字段,一对多
 	1、ForeignKey
 		外键类型在ORM中用来表示外键关联关系，一般把ForeignKey字段设置在 '一对多'中'多'的一方。
 		ForeignKey可以和其他表做关联关系同时也可以和自身做关联关系。
@@ -63,8 +63,8 @@
 				语法：表名__字段
 					示例：
 					titles = models.Publisher.objects.values_list("book__title")
-					
-	3、ManyToManyField：多对多关联关系，将会创建出第三张表来说明对应关系
+2.1.4 关系字段,多对多					
+	1、ManyToManyField：多对多关联关系，将会创建出第三张表来说明对应关系
 		class Author(models.Model):
 			id = models.AutoField(primary_key=True)
 			name = models.CharField(max_length=16, null=False, unique=True)
@@ -74,7 +74,7 @@
 			# author_obj.book 返回的为app01.Books.None，ORM封装的一个管理对象
 			# author_obj.book.all() 返回的为<QuerySet [<Books: Books object>, <Books: Books object>]>
 			# 在前端HTML中可以写author_obj.book.all，同时在for循环中直接使用变量author_obj.book.all，{% for book in author.book.all %}
-	4、方法
+	2、方法
 		create() 创建一个新的对象，保存对象，并将它添加到关联对象集之中，返回新创建的对象。
 			通过作者创建一本书,会自动保存
 	        做了两件事：
@@ -97,7 +97,52 @@
 		clear() 从关联对象集中移除一切对象。	
 			jing_obj = models.Author.objects.get(id=2)	
 			jing_obj.books.clear()
-2.1.4 聚合查询和分组查询
+	3、多对多关联关系的三种方式
+		1）方式一：自行创建第三张表
+			class Book(models.Model):
+				title = models.CharField(max_length=32, verbose_name="书名")
+			class Author(models.Model):
+				name = models.CharField(max_length=32, verbose_name="作者姓名")		
+			# 自己创建第三张表，分别通过外键关联书和作者
+			class Author2Book(models.Model):
+				author = models.ForeignKey(to="Author")
+				book = models.ForeignKey(to="Book")
+				
+				class Meta:
+					unique_together = ("author", "book")
+		2）方式二：通过ManyToManyField自动创建第三张表
+			class Book(models.Model):
+				title = models.CharField(max_length=32, verbose_name="书名")			
+			# 通过ORM自带的ManyToManyField自动创建第三张表
+			class Author(models.Model):
+				name = models.CharField(max_length=32, verbose_name="作者姓名")
+				books = models.ManyToManyField(to="Book", related_name="authors")
+		3）方式三：设置ManyTomanyField并指定自行创建的第三张表
+			class Book(models.Model):
+				title = models.CharField(max_length=32, verbose_name="书名")			
+			# 自己创建第三张表，并通过ManyToManyField指定关联
+			class Author(models.Model):
+				name = models.CharField(max_length=32, verbose_name="作者姓名")
+				books = models.ManyToManyField(to="Book", through="Author2Book", through_fields=("author", "book"))
+				# through_fields接受一个2元组（'field1'，'field2'）：
+				# 其中field1是定义ManyToManyField的模型外键的名（author），field2是关联目标模型（book）的外键名。						
+			class Author2Book(models.Model):
+				author = models.ForeignKey(to="Author")
+				book = models.ForeignKey(to="Book")
+				
+				class Meta:
+					unique_together = ("author", "book")
+					
+		注意：
+			当我们需要在第三张关系表中存储额外的字段时，就要使用第三种方式。
+			但是当我们使用第三种方式创建多对多关联关系时，就无法使用set、add、remove、clear方法来管理多对多的关系了，需要通过第三张表的model来管理多对多关系
+2.1.5 关系字段,一对一	
+	1、OneToOneField：一对一字段。通常一对一字段用来扩展已有字段。一对一的关联关系多用在当一张表的不同字段查询频次差距过大的情况下，将本可以存储在一张表的字段拆开放置在两张表中，然后将两张表建立一对一的关联关系。如一张作者表，另外一张作者详情表。
+	字段参数：to
+	设置要关联的表：to_field
+	设置要关联的字段：on_delete（同ForeignKey字段）
+	
+2.1.6 聚合查询和分组查询
 	1、聚合
 		aggregate()是QuerySet 的一个终止子句，意思是说，它返回一个包含一些键值对的字典。
 		键的名称是聚合值的标识符，值是计算出来的聚合值。键的名称是按照字段和聚合函数的名称自动生成出来的。
@@ -116,4 +161,18 @@
 			>>> models.Book.objects.all().aggregate(Avg("price"), Max("price"), Min("price"))
 			{'price__avg': 13.233333, 'price__max': Decimal('19.90'), 'price__min': Decimal('9.90')}			
 			
-			
+2.1.7 元信息：ORM对应的类里面包含另一个Meta类，而Meta类封装了一些数据库的信息。主要字段如下:
+
+	db_table
+	ORM在数据库中的表名默认是 app_类名，可以通过db_table可以重写表名。
+	
+	index_together
+	联合索引。
+	
+	unique_together
+	联合唯一索引。
+	
+	ordering
+	指定默认按什么字段排序。
+	
+	只有设置了该属性，我们查询到的结果才可以被reverse()。			
